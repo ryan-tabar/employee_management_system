@@ -2,6 +2,16 @@
 
 This is an Employee Management System implemented in C programming language using SQLite3 as the underlying database. The system allows you to store, retrieve, update, and delete employee information.
 
+## Prerequisites
+
+Before running the program, ensure that you have the following dependencies installed on your system:
+
+- GCC (GNU Compiler Collection)
+- GNU Make
+- SQLite3
+
+Make sure these prerequisites are installed and accessible from the command line before proceeding with the compilation and execution of the program.
+
 ## Setup
 
 1. Clone the repository or download the source code.
@@ -45,6 +55,3 @@ The Employee Management System uses a single table named "Employees" to store em
 Feel free to customize and modify the system according to your requirements. If you encounter any issues or have suggestions for improvement, please submit them in the issue tracker or contribute to the project by creating pull requests.
 
 Enjoy managing your employees efficiently with this Employee Management System!
-
----
-Feel free to further customize the README.md file according to your specific implementation details or any other relevant information for users.
