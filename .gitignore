@@ -4,6 +4,7 @@
 # Executables
 *.exe
 *.out
+program
 
 # SQLite database files
 *.db
@@ -11,6 +12,3 @@
 # Build directories
 /build/
 /bin/
-
-# Generated files
-Makefile
