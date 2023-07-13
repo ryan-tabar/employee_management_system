@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <sqlite3.h>
 
 // Callback function to handle each row of the result set
@@ -47,10 +48,17 @@ bool insertDefaultData(sqlite3* db) {
     return executeSQL_query(db, 0, sql);
 }
 
-bool searchEmployee(sqlite3* db, const char* name) {
+bool searchEmployee(sqlite3* db, const char* name, const char* attributes) {
     char sql[100];
-    sprintf(sql, "SELECT EmployeeID, Name FROM Employees "
-                 "WHERE UPPER(Name) LIKE UPPER('%%%s%%');", name);
+    sprintf(sql, "SELECT %s FROM Employees "
+                 "WHERE UPPER(Name) LIKE UPPER('%%%s%%');", attributes, name);
+    return executeSQL_query(db, callback, sql);
+}
+
+bool searchEmployeeById(sqlite3* db, int id, const char* attributes) {
+    char sql[100];
+    sprintf(sql, "SELECT %s FROM Employees "
+                 "WHERE EmployeeId = %d;", attributes, id);
     return executeSQL_query(db, callback, sql);
 }
 
@@ -66,8 +74,8 @@ void handleMenuState(enum MenuState* menuState) {
     printf("\n\n----------Main Menu-----------");
     printf("\n\n1. Search Employee.");
     printf("\n2. Add Employee.");
+
     printf("\n\nEnter your choice: ");
-    
     int rc = scanf("%d", (int*)menuState);
     if (rc != 1 || *menuState < 0 || *menuState > 5) {
         printf("Invalid input!");
@@ -81,16 +89,27 @@ void handleSearchEmployeeState(sqlite3* db, enum MenuState* menuState) {
     char name[40];
     printf("\n\nType a name: ");
 
-    // Clear the input buffer
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
-
     if (scanf("%39[^\n]", name) != 1) {
         printf("Invalid input!");
         *menuState = SearchEmployee;
     }
-    printf("\nSearching for %s...", name);
-    searchEmployee(db, name);
+    if (strcmp(name, "main") == 0 || strcmp(name, "Main") == 0) {
+        *menuState = Main;
+        return;
+    }
+
+    printf("\nResults:");
+    searchEmployee(db, name, "EmployeeID, Name");
+
+    int id;
+    printf("\n\nChoose an employee to view using their id: ");
+    if (scanf("%d", &id) != 1) {
+        printf("Invalid input!");
+        *menuState = SearchEmployee;
+        return;
+    }
+    searchEmployeeById(db, id, "*");
+
 }
 
 int main() {
@@ -115,6 +134,7 @@ int main() {
     }
 
     printf("\n\nWelcome to the Employee Management System!");
+    printf("\nAt any point: type 'main' or 'Main' to return the main menu.");
     enum MenuState menuState = Main;
     while (menuState != Exit) {
         switch (menuState) {
@@ -129,6 +149,10 @@ int main() {
             default:
                 menuState = Exit;
         }
+
+        // Clear the input buffer
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
     }
     
     sqlite3_close(db);
